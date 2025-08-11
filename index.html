@@ -2,231 +2,122 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Phosfor Font Superfamily Showcase</title>
+  <title>Modern Electrics – Simple Specimen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    /* ====== Font (single face) ====== */
+    @font-face {
+      font-family: "ModernElectrics";
+      src:
+        url("fonts/ModernElectrics.woff2") format("woff2"),
+        url("fonts/ModernElectrics.otf") format("opentype");
+      font-display: swap;
+    }
+
+    /* ====== Theme tokens (light) ====== */
     :root {
       --bg: #f8f8f8;
       --text: #333;
       --panel: #fff;
       --label: #777;
+      --ring: rgba(0,0,0,.1);
     }
-    body.dark {
+
+    /* Dark mode when the checkbox is checked (pure CSS) */
+    #dark:checked ~ .page {
       --bg: #121212;
       --text: #eee;
       --panel: #1e1e1e;
       --label: #aaa;
+      --ring: rgba(255,255,255,.15);
     }
+
+    /* ====== Base layout ====== */
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: sans-serif;
       background: var(--bg);
       color: var(--text);
-      padding: 2rem;
-      transition: background 0.3s, color 0.3s;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-    select, input[type="range"], input[type="text"] {
-      font-size: 1rem;
-      padding: 0.5rem;
-      margin: 1rem 0;
-    }
+    .page { padding: 2rem; transition: background .3s, color .3s; }
+
+    h1 { margin: 0 0 .5rem; font-size: 2rem; }
+    p  { margin: 0 0 1rem; color: var(--label); }
+
+    /* Controls */
     .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      align-items: center;
+      display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center;
+      margin: 1rem 0 1.25rem;
     }
-    .preview-text {
-      font-family: 'PhosforCustom';
-      font-size: 2.5rem;
-      margin: 1rem 0;
-      padding: 1rem;
+    .chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .5rem .75rem; border-radius: 999px; background: var(--panel);
+      box-shadow: 0 1px 4px var(--ring);
+      user-select: none; cursor: pointer;
+    }
+    .chip input { appearance: none; width: .9rem; height: .9rem; border: 2px solid var(--label); border-radius: 3px; display: inline-block; }
+    .chip input:checked { background: var(--text); border-color: var(--text); }
+
+    /* Preview area */
+    .specimen {
+      font-family: "ModernElectrics", monospace; /* fallback only */
       background: var(--panel);
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .glyph-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
-      gap: 1rem;
-      background: var(--panel);
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .glyph-cell {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.5rem;
-      cursor: pointer;
-    }
-    .glyph {
-      font-size: 2.5rem;
-      line-height: 1;
-      font-family: 'PhosforCustom';
-    }
-    .glyph-label {
-      font-size: 0.75rem;
-      color: var(--label);
-      margin-top: 0.3rem;
-      text-align: center;
-    }
-    .inspector {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--panel);
-      padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      z-index: 9999;
-      text-align: center;
+      padding: 1rem;
+      box-shadow: 0 2px 10px var(--ring);
+      line-height: 1.2;
+      min-height: 6rem;
+      outline: none;
     }
-    .inspector .glyph {
-      font-size: 12rem;
+    .specimen:focus { box-shadow: 0 0 0 3px var(--ring); }
+
+    /* Size presets via pure CSS radios */
+    #s24:checked ~ .specimen { font-size: 24px; }
+    #s36:checked ~ .specimen { font-size: 36px; }
+    #s48:checked ~ .specimen { font-size: 48px; }
+    #s72:checked ~ .specimen { font-size: 72px; }
+
+    /* Hidden helper checkboxes/radios */
+    .visually-hidden {
+      position: absolute !important; clip: rect(0 0 0 0) !important;
+      clip-path: inset(50%) !important; height: 1px !important; width: 1px !important;
+      overflow: hidden !important; white-space: nowrap !important; border: 0 !important;
+      padding: 0 !important; margin: 0 !important;
     }
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 9998;
-    }
+
+    .row { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; }
+    .spacer { flex: 1; }
   </style>
 </head>
 <body>
-  <h1>Phosfor Font Superfamily Showcase</h1>
-  <div class="controls">
-    <label for="styleSelector">Select style:</label>
-    <select id="styleSelector">
-    <option value="Phosfor-Aether5Pixel.otf">Aether 5 Pixel</option>
-    <option value="Phosfor-Aether52Tilted.otf">Aether 52 Pixel Tilted</option>
-    <option value="Phosfor-Aether53Italic.otf">Aether 53 Pixel Italic</option>
-    <option value="Phosfor-Aether4Lite.otf">Aether 4 Lite</option>
-    <option value="Phosfor-Aether42LiteTilt.otf">Aether 42 Lite Tilt</option>
-    <option value="Phosfor-Aether43LItalic.otf">Aether 43 Lite Italic</option>
-    <option value="Phosfor-Aether6Medium.otf">Aether 6 Medium</option>
-    <option value="Phosfor-Aether62MedTilt.otf">Aether 62 Medium Tilt</option>
-    <option value="Phosfor-Aether63MItalic.otf">Aether 63 Medium Italic</option>
-    <option value="Phosfor-Aether7Bold.otf">Aether 7 Bold</option>
-    <option value="Phosfor-Aether73BItalic.otf">Aether 73 Bold Italic</option>
-    <option value="Phosfor-Aether77ExtraBold.otf">Aether 77 Extra Bold</option>
-    <option value="Phosfor-Aether92LTE.otf">Aether 92 Lite Tilt Extended</option>
-    <option value="Phosfor-Aether94LiteExt.otf">Aether 94 Lite Extended</option>
-    <option value="Phosfor-Aether95Extended.otf">Aether 95 Pixel Extended</option>
-    <option value="Phosfor-Aether96MedExt.otf">Aether 96 Medium Extended</option>
-    <option value="Phosfor-Aether97BoldExt.otf">Aether 97 Bold Extended</option>
-    <option value="Phosfor-Aether772XBTilt.otf">Aether 772 Extra Bold Tilt</option>
-    <option value="Phosfor-Aether773XBI.otf">Aether 773 Extra Bold Italic</option>
-    <option value="Phosfor-Aether977XBE.otf">Aether 977 Extra Bold Extended</option>
-    <option value="Phosfor-RadiantMK1.otf">Radiant MK1</option>
-    <option value="Phosfor-Vaulted.otf">Vaulted</option>
-    </select>
+  <!-- Dark mode toggle (no JS) -->
+  <input id="dark" type="checkbox" class="visually-hidden" />
 
-    <label for="fontSize">Size:</label>
-    <input type="range" id="fontSize" min="16" max="96" value="40">
+  <div class="page">
+    <div class="row">
+      <h1>Modern Electrics</h1>
+      <div class="spacer"></div>
+      <label class="chip" for="dark">
+        <input type="checkbox" aria-hidden="true" />
+        Dark mode
+      </label>
+    </div>
+    <p>Type directly in the box below. Use the size presets to change the specimen size.</p>
 
-    <label for="previewInput">Preview:</label>
-    <input type="text" id="previewInput" value="START TYPING IN PREVIEW FIELD">
+    <!-- Size controls (pure CSS) -->
+    <div class="controls">
+      <label class="chip"><input id="s24" name="size" type="radio" checked /> 24px</label>
+      <label class="chip"><input id="s36" name="size" type="radio" /> 36px</label>
+      <label class="chip"><input id="s48" name="size" type="radio" /> 48px</label>
+      <label class="chip"><input id="s72" name="size" type="radio" /> 72px</label>
+    </div>
 
-    <button id="toggleTheme">Toggle Dark Mode</button>
+    <!-- Editable preview (no JavaScript needed) -->
+    <div class="specimen" contenteditable="true" spellcheck="false">
+      START TYPING IN THIS PREVIEW BOX
+    </div>
   </div>
-
-  <div id="preview" class="preview-text"></div>
-  <div class="glyph-grid" id="glyphGrid"></div>
-
-  <div class="overlay" id="overlay"></div>
-  <div class="inspector" id="inspector">
-    <div class="glyph" id="inspectorGlyph"></div>
-    <div class="glyph-label" id="inspectorLabel"></div>
-  </div>
-
-  <script>
-    const unicodeList = Array.from({ length: 94 }, (_, i) => 33 + i);
-    const grid = document.getElementById('glyphGrid');
-    const styleSelector = document.getElementById('styleSelector');
-    const fontSizeSlider = document.getElementById('fontSize');
-    const preview = document.getElementById('preview');
-    const previewInput = document.getElementById('previewInput');
-    const overlay = document.getElementById('overlay');
-    const inspector = document.getElementById('inspector');
-    const inspectorGlyph = document.getElementById('inspectorGlyph');
-    const inspectorLabel = document.getElementById('inspectorLabel');
-    const toggleTheme = document.getElementById('toggleTheme');
-
-    const baseURL = 'https://gigidesigns-netizen.github.io/phosfor-font-superfamily/fonts/';
-
-    function updateFont(fontFile) {
-      const url = baseURL + fontFile;
-      const fontFace = new FontFace('PhosforCustom', `url(${url}) format("opentype")`);
-      fontFace.load().then(loaded => {
-        document.fonts.clear();
-        document.fonts.add(loaded);
-        renderGlyphs();
-        updatePreview();
-      }).catch(err => console.error('Font load failed:', err));
-    }
-
-    function renderGlyphs() {
-      grid.innerHTML = '';
-      unicodeList.forEach(cp => {
-        const ch = String.fromCodePoint(cp);
-        const cell = document.createElement('div');
-        cell.className = 'glyph-cell';
-        const glyph = document.createElement('div');
-        glyph.className = 'glyph';
-        glyph.textContent = ch;
-        glyph.style.fontSize = fontSizeSlider.value + 'px';
-
-        const label = document.createElement('div');
-        label.className = 'glyph-label';
-        label.textContent = 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
-
-        cell.appendChild(glyph);
-        cell.appendChild(label);
-        cell.addEventListener('click', () => openInspector(ch, label.textContent));
-        grid.appendChild(cell);
-      });
-    }
-
-    function updatePreview() {
-      preview.style.fontSize = fontSizeSlider.value + 'px';
-      preview.textContent = previewInput.value;
-    }
-
-    function openInspector(char, label) {
-      inspectorGlyph.textContent = char;
-      inspectorLabel.textContent = label;
-      overlay.style.display = 'block';
-      inspector.style.display = 'block';
-    }
-
-    overlay.addEventListener('click', () => {
-      inspector.style.display = 'none';
-      overlay.style.display = 'none';
-    });
-
-    styleSelector.addEventListener('change', () => updateFont(styleSelector.value));
-    fontSizeSlider.addEventListener('input', () => {
-      renderGlyphs();
-      updatePreview();
-    });
-    previewInput.addEventListener('input', updatePreview);
-    toggleTheme.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-    });
-
-    updateFont(styleSelector.value);
-  </script>
 </body>
 </html>
+
