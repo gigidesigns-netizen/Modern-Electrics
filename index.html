@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Modern Electrics – Simple Specimen</title>
+  <title>Phosfor Font Superfamily Showcase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* ====== Font (single face) ====== */
     @font-face {
       font-family: "ModernElectrics";
       src:
@@ -14,110 +13,120 @@
       font-display: swap;
     }
 
-    /* ====== Theme tokens (light) ====== */
     :root {
-      --bg: #f8f8f8;
+      --bg: #f5f5f5;
       --text: #333;
       --panel: #fff;
-      --label: #777;
-      --ring: rgba(0,0,0,.1);
+      --label: #555;
     }
-
-    /* Dark mode when the checkbox is checked (pure CSS) */
-    #dark:checked ~ .page {
+    body.dark {
       --bg: #121212;
-      --text: #eee;
+      --text: #eaeaea;
       --panel: #1e1e1e;
       --label: #aaa;
-      --ring: rgba(255,255,255,.15);
     }
 
-    /* ====== Base layout ====== */
-    * { box-sizing: border-box; }
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      padding: 2rem;
+      transition: background .3s, color .3s;
     }
-    .page { padding: 2rem; transition: background .3s, color .3s; }
 
-    h1 { margin: 0 0 .5rem; font-size: 2rem; }
-    p  { margin: 0 0 1rem; color: var(--label); }
+    h1 {
+      font-size: 2.25rem;
+      margin-bottom: 1rem;
+    }
 
-    /* Controls */
     .controls {
-      display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center;
-      margin: 1rem 0 1.25rem;
+      display: grid;
+      grid-template-columns: auto 280px auto 280px auto;
+      align-items: center;
+      gap: .75rem 1rem;
+      margin-bottom: 1rem;
     }
-    .chip {
-      display: inline-flex; align-items: center; gap: .35rem;
-      padding: .5rem .75rem; border-radius: 999px; background: var(--panel);
-      box-shadow: 0 1px 4px var(--ring);
-      user-select: none; cursor: pointer;
-    }
-    .chip input { appearance: none; width: .9rem; height: .9rem; border: 2px solid var(--label); border-radius: 3px; display: inline-block; }
-    .chip input:checked { background: var(--text); border-color: var(--text); }
 
-    /* Preview area */
-    .specimen {
-      font-family: "ModernElectrics", monospace; /* fallback only */
+    .controls label {
+      color: var(--label);
+      font-size: 0.95rem;
+    }
+
+    .controls input[type="range"] {
+      width: 100%;
+    }
+
+    .controls input[type="text"] {
+      width: 100%;
+      padding: .5rem .6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
       background: var(--panel);
-      border-radius: 12px;
+      color: var(--text);
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid #bbb;
+      background: #eee;
+      color: #222;
+      padding: .4rem .6rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    body.dark button {
+      background: #2a2a2a;
+      border-color: #3a3a3a;
+      color: #eaeaea;
+    }
+
+    .preview-text {
+      font-family: "ModernElectrics", monospace;
+      font-size: 40px;
+      margin: 1rem 0;
       padding: 1rem;
-      box-shadow: 0 2px 10px var(--ring);
+      background: var(--panel);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       line-height: 1.2;
-      min-height: 6rem;
-      outline: none;
     }
-    .specimen:focus { box-shadow: 0 0 0 3px var(--ring); }
-
-    /* Size presets via pure CSS radios */
-    #s24:checked ~ .specimen { font-size: 24px; }
-    #s36:checked ~ .specimen { font-size: 36px; }
-    #s48:checked ~ .specimen { font-size: 48px; }
-    #s72:checked ~ .specimen { font-size: 72px; }
-
-    /* Hidden helper checkboxes/radios */
-    .visually-hidden {
-      position: absolute !important; clip: rect(0 0 0 0) !important;
-      clip-path: inset(50%) !important; height: 1px !important; width: 1px !important;
-      overflow: hidden !important; white-space: nowrap !important; border: 0 !important;
-      padding: 0 !important; margin: 0 !important;
-    }
-
-    .row { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; }
-    .spacer { flex: 1; }
   </style>
 </head>
 <body>
-  <!-- Dark mode toggle (no JS) -->
-  <input id="dark" type="checkbox" class="visually-hidden" />
+  <h1>Phosfor Font Superfamily Showcase</h1>
 
-  <div class="page">
-    <div class="row">
-      <h1>Modern Electrics</h1>
-      <div class="spacer"></div>
-      <label class="chip" for="dark">
-        <input type="checkbox" aria-hidden="true" />
-        Dark mode
-      </label>
-    </div>
-    <p>Type directly in the box below. Use the size presets to change the specimen size.</p>
-
-    <!-- Size controls (pure CSS) -->
-    <div class="controls">
-      <label class="chip"><input id="s24" name="size" type="radio" checked /> 24px</label>
-      <label class="chip"><input id="s36" name="size" type="radio" /> 36px</label>
-      <label class="chip"><input id="s48" name="size" type="radio" /> 48px</label>
-      <label class="chip"><input id="s72" name="size" type="radio" /> 72px</label>
-    </div>
-
-    <!-- Editable preview (no JavaScript needed) -->
-    <div class="specimen" contenteditable="true" spellcheck="false">
-      START TYPING IN THIS PREVIEW BOX
-    </div>
+  <div class="controls">
+    <label for="fontSize">Size:</label>
+    <input type="range" id="fontSize" min="16" max="96" value="40" />
+    <label for="previewInput">Preview:</label>
+    <input type="text" id="previewInput" value="Start Typing In Preview" />
+    <button id="toggleTheme" type="button">Toggle Dark Mode</button>
   </div>
+
+  <div id="preview" class="preview-text">Start Typing In Preview</div>
+
+  <script>
+    const fontSizeSlider = document.getElementById('fontSize');
+    const preview = document.getElementById('preview');
+    const previewInput = document.getElementById('previewInput');
+    const toggleTheme = document.getElementById('toggleTheme');
+
+    function updatePreview() {
+      preview.style.fontSize = fontSizeSlider.value + 'px';
+      preview.textContent = previewInput.value;
+    }
+
+    fontSizeSlider.addEventListener('input', updatePreview);
+    previewInput.addEventListener('input', updatePreview);
+    toggleTheme.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+    updatePreview();
+  </script>
 </body>
 </html>
+
 
