@@ -3,131 +3,213 @@
 <head>
   <meta charset="UTF-8" />
   <title>Modern Electrics Font Resurrection</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    @font-face {
-      font-family: "ModernElectrics";
-      src:
-        url("fonts/ModernElectrics.woff2") format("woff2"),
-        url("fonts/ModernElectrics.otf") format("opentype");
-      font-display: swap;
-    }
-
     :root {
-      --bg: #f5f5f5;
+      --bg: #f8f8f8;
       --text: #333;
       --panel: #fff;
-      --label: #555;
+      --label: #777;
     }
     body.dark {
       --bg: #121212;
-      --text: #eaeaea;
+      --text: #eee;
       --panel: #1e1e1e;
       --label: #aaa;
     }
-
     body {
       margin: 0;
+      font-family: sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       padding: 2rem;
-      transition: background .3s, color .3s;
+      transition: background 0.3s, color 0.3s;
     }
-
     h1 {
-      font-size: 2.25rem;
-      margin-bottom: 1rem;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
     }
-
+    select, input[type="range"], input[type="text"] {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin: 1rem 0;
+    }
     .controls {
-      display: grid;
-      grid-template-columns: auto 280px auto 280px auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
       align-items: center;
-      gap: .75rem 1rem;
-      margin-bottom: 1rem;
     }
-
-    .controls label {
-      color: var(--label);
-      font-size: 0.95rem;
-    }
-
-    .controls input[type="range"] {
-      width: 100%;
-    }
-
-    .controls input[type="text"] {
-      width: 100%;
-      padding: .5rem .6rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: var(--panel);
-      color: var(--text);
-    }
-
-    button {
-      appearance: none;
-      border: 1px solid #bbb;
-      background: #eee;
-      color: #222;
-      padding: .4rem .6rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    body.dark button {
-      background: #2a2a2a;
-      border-color: #3a3a3a;
-      color: #eaeaea;
-    }
-
     .preview-text {
-      font-family: "ModernElectrics", monospace;
-      font-size: 40px;
+      font-family: 'ModernElectrics';
+      font-size: 2.5rem;
       margin: 1rem 0;
       padding: 1rem;
       background: var(--panel);
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      line-height: 1.2;
+    }
+    .glyph-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+      gap: 1rem;
+      background: var(--panel);
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .glyph-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+    .glyph {
+      font-size: 2.5rem;
+      line-height: 1;
+      font-family: 'ModernElectrics';
+    }
+    .glyph-label {
+      font-size: 0.75rem;
+      color: var(--label);
+      margin-top: 0.3rem;
+      text-align: center;
+    }
+    .inspector {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--panel);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+      text-align: center;
+    }
+    .inspector .glyph {
+      font-size: 12rem;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
     }
   </style>
 </head>
 <body>
-  <h1>Modern Electrics Font Showcase</h1>
-
+  <h1>Modern Electrics Font Resurrection</h1>
   <div class="controls">
+    <label for="styleSelector">Select style:</label>
+    <select id="styleSelector">
+    <option value="ModernElectrics.otf">Modern Electrics</option>
+    </select>
+
     <label for="fontSize">Size:</label>
-    <input type="range" id="fontSize" min="16" max="96" value="40" />
+    <input type="range" id="fontSize" min="16" max="96" value="40">
+
     <label for="previewInput">Preview:</label>
-    <input type="text" id="previewInput" value="Start Typing In Preview" />
-    <button id="toggleTheme" type="button">Toggle Dark Mode</button>
+    <input type="text" id="previewInput" value="KERNING IS SIMULATED">
+
+    <button id="toggleTheme">Toggle Dark Mode</button>
   </div>
 
-  <div id="preview" class="preview-text">Start Typing In Preview</div>
+  <div id="preview" class="preview-text"></div>
+  <div class="glyph-grid" id="glyphGrid"></div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="inspector" id="inspector">
+    <div class="glyph" id="inspectorGlyph"></div>
+    <div class="glyph-label" id="inspectorLabel"></div>
+  </div>
 
   <script>
+    const unicodeList = Array.from({ length: 94 }, (_, i) => 33 + i);
+    const grid = document.getElementById('glyphGrid');
+    const styleSelector = document.getElementById('styleSelector');
     const fontSizeSlider = document.getElementById('fontSize');
     const preview = document.getElementById('preview');
     const previewInput = document.getElementById('previewInput');
+    const overlay = document.getElementById('overlay');
+    const inspector = document.getElementById('inspector');
+    const inspectorGlyph = document.getElementById('inspectorGlyph');
+    const inspectorLabel = document.getElementById('inspectorLabel');
     const toggleTheme = document.getElementById('toggleTheme');
+
+    const baseURL = 'https://gigidesigns-netizen.github.io/Modern-Electrics/fonts/';
+
+    function updateFont(fontFile) {
+      const url = baseURL + fontFile;
+      const fontFace = new FontFace('ModernElectrics', `url(${url}) format("opentype")`);
+      fontFace.load().then(loaded => {
+        document.fonts.clear();
+        document.fonts.add(loaded);
+        renderGlyphs();
+        updatePreview();
+      }).catch(err => console.error('Font load failed:', err));
+    }
+
+    function renderGlyphs() {
+      grid.innerHTML = '';
+      unicodeList.forEach(cp => {
+        const ch = String.fromCodePoint(cp);
+        const cell = document.createElement('div');
+        cell.className = 'glyph-cell';
+        const glyph = document.createElement('div');
+        glyph.className = 'glyph';
+        glyph.textContent = ch;
+        glyph.style.fontSize = fontSizeSlider.value + 'px';
+
+        const label = document.createElement('div');
+        label.className = 'glyph-label';
+        label.textContent = 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
+
+        cell.appendChild(glyph);
+        cell.appendChild(label);
+        cell.addEventListener('click', () => openInspector(ch, label.textContent));
+        grid.appendChild(cell);
+      });
+    }
 
     function updatePreview() {
       preview.style.fontSize = fontSizeSlider.value + 'px';
       preview.textContent = previewInput.value;
     }
 
-    fontSizeSlider.addEventListener('input', updatePreview);
+    function openInspector(char, label) {
+      inspectorGlyph.textContent = char;
+      inspectorLabel.textContent = label;
+      overlay.style.display = 'block';
+      inspector.style.display = 'block';
+    }
+
+    overlay.addEventListener('click', () => {
+      inspector.style.display = 'none';
+      overlay.style.display = 'none';
+    });
+
+    styleSelector.addEventListener('change', () => updateFont(styleSelector.value));
+    fontSizeSlider.addEventListener('input', () => {
+      renderGlyphs();
+      updatePreview();
+    });
     previewInput.addEventListener('input', updatePreview);
     toggleTheme.addEventListener('click', () => {
       document.body.classList.toggle('dark');
     });
 
-    updatePreview();
+    updateFont(styleSelector.value);
   </script>
 </body>
 </html>
+
 
 
 
